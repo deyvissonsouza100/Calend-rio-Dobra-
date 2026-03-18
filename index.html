@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendário de Dobras 2026</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --bg-soft: #121a2b;
+      --card: rgba(18, 26, 43, 0.78);
+      --card-strong: rgba(10, 16, 28, 0.88);
+      --line: rgba(255,255,255,0.08);
+      --text: #ecf2ff;
+      --muted: #9fb0d0;
+      --blue: #3aa0ff;
+      --blue-soft: rgba(58, 160, 255, 0.16);
+      --dark: #161616;
+      --dark-soft: rgba(255,255,255,0.08);
+      --holiday: #ffe84d;
+      --holiday-text: #101010;
+      --accent: #ff9b2f;
+      --success: #84e1bc;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(58,160,255,0.18), transparent 34%),
+        radial-gradient(circle at top right, rgba(255,155,47,0.16), transparent 28%),
+        linear-gradient(180deg, #0a1020 0%, #0b1220 35%, #101828 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(1380px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(16,24,40,0.92), rgba(19,31,54,0.78));
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      padding: 34px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+      backdrop-filter: blur(18px);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(24px);
+      pointer-events: none;
+    }
+
+    .hero::before {
+      width: 220px;
+      height: 220px;
+      background: rgba(58,160,255,0.22);
+      top: -60px;
+      left: -40px;
+    }
+
+    .hero::after {
+      width: 240px;
+      height: 240px;
+      background: rgba(255,155,47,0.18);
+      right: -60px;
+      bottom: -90px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 4rem);
+      line-height: 1.02;
+      margin: 0 0 12px;
+      letter-spacing: -0.04em;
+    }
+
+    .grad {
+      background: linear-gradient(90deg, #ffffff 0%, #92c9ff 45%, #ffbf78 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 62ch;
+      line-height: 1.6;
+    }
+
+    .hero-side {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      align-content: start;
+    }
+
+    .stat {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 120px;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+
+    .stat .value {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+
+    .stat .hint {
+      color: #c6d2ed;
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+
+    .controls {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1.1fr auto auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .search,
+    .select,
+    .toggle-group,
+    .panel,
+    .month-card,
+    .legend,
+    .quick-actions {
+      backdrop-filter: blur(16px);
+    }
+
+    .search,
+    .select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 14px 16px;
+      font-size: 0.98rem;
+      outline: none;
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      font-weight: 700;
+    }
+
+    .chip:hover { transform: translateY(-1px); }
+    .chip.active { border-color: rgba(58,160,255,0.45); background: rgba(58,160,255,0.16); }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .legend,
+    .quick-actions,
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .legend {
+      padding: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .dot.blue { background: var(--blue); }
+    .dot.dark { background: #2a2a2a; border: 1px solid rgba(255,255,255,0.16); }
+    .dot.holiday { background: var(--holiday); }
+
+    .quick-actions {
+      padding: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .ghost {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .layout {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) 360px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .months-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .month-card {
+      position: relative;
+      background: linear-gradient(180deg, rgba(16,24,40,0.82), rgba(15,22,35,0.78));
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .month-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .month-title {
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .month-sub {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .badge {
+      min-width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,155,47,0.24), rgba(255,155,47,0.12));
+      border: 1px solid rgba(255,155,47,0.3);
+      font-weight: 900;
+      color: #ffd2a1;
+    }
+
+    .weekdays,
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .weekday {
+      text-align: center;
+      color: #a9b8d4;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 4px 0;
+    }
+
+    .weekday.sun { color: #ff8a8a; }
+
+    .day {
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.18s ease;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    .day:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .day.empty {
+      background: rgba(255,255,255,0.02);
+      border-style: dashed;
+      cursor: default;
+    }
+
+    .day.empty:hover { transform: none; }
+
+    .day.dobra1 {
+      background: linear-gradient(180deg, rgba(58,160,255,0.25), rgba(58,160,255,0.12));
+      color: #dff0ff;
+      box-shadow: inset 0 0 0 1px rgba(58,160,255,0.22);
+    }
+
+    .day.dobra2 {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      color: #f6f7fb;
+    }
+
+    .day.holiday {
+      background: linear-gradient(180deg, rgba(255,232,77,0.95), rgba(255,232,77,0.76));
+      color: var(--holiday-text);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+    }
+
+    .day.hidden { opacity: 0.12; filter: grayscale(1); }
+    .day.selected { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }
+
+    .day small {
+      position: absolute;
+      top: 7px;
+      left: 8px;
+      font-size: 0.62rem;
+      font-weight: 800;
+      opacity: 0.88;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .month-footer {
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .panel {
+      position: sticky;
+      top: 18px;
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(15,22,35,0.92), rgba(10,16,28,0.94));
+    }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+      letter-spacing: -0.04em;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .info-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .info-card .k {
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 800;
+    }
+
+    .info-card .v {
+      font-size: 1rem;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .pill.blue { background: var(--blue-soft); color: #dff0ff; border-color: rgba(58,160,255,0.28); }
+    .pill.dark { background: rgba(255,255,255,0.04); color: #ffffff; }
+    .pill.holiday { background: rgba(255,232,77,0.9); color: #111; }
+
+    .footer-note {
+      margin-top: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 1180px) {
+      .hero,
+      .layout,
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .months-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .controls { grid-template-columns: 1fr; }
+      .toggle-group, .quick-actions { justify-content: flex-start; }
+      .panel { position: static; }
+    }
+
+    @media (max-width: 760px) {
+      .container { width: min(100% - 20px, 100%); }
+      .hero { padding: 22px; border-radius: 24px; }
+      .hero-side { grid-template-columns: 1fr; }
+      .months-grid { grid-template-columns: 1fr; }
+      .month-card { padding: 16px; }
+      .day { min-height: 48px; border-radius: 14px; }
+      .legend { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">📅 Calendário de Serviço • Visual moderno • GitHub Pages</div>
+        <h1><span class="grad">Calendário de Dobras 2026</span></h1>
+        <p>
+          Visualize rapidamente os dias de <strong>Dobra I</strong> e <strong>Dobra II</strong>, filtre por tipo,
+          destaque feriados e clique em qualquer dia para ver os detalhes. O site foi pensado para ficar bonito,
+          leve e fácil de publicar no GitHub.
+        </p>
+      </div>
+      <div class="hero-side">
+        <div class="stat">
+          <div class="label">Dias Dobra I</div>
+          <div class="value" id="statD1">0</div>
+          <div class="hint">Marcados em azul para leitura rápida.</div>
+        </div>
+        <div class="stat">
+          <div class="label">Dias Dobra II</div>
+          <div class="value" id="statD2">0</div>
+          <div class="hint">Demais dias do calendário, em preto.</div>
+        </div>
+        <div class="stat">
+          <div class="label">Feriados destacados</div>
+          <div class="value" id="statFer">0</div>
+          <div class="hint">Com cartão amarelo para chamar atenção.</div>
+        </div>
+        <div class="stat">
+          <div class="label">Ano</div>
+          <div class="value">2026</div>
+          <div class="hint">Calendário anual completo e interativo.</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="controls">
+      <input id="searchInput" class="search" type="text" placeholder="Pesquisar por mês, dia ou feriado... Ex.: setembro, 7, natal" />
+      <select id="monthSelect" class="select">
+        <option value="todos">Todos os meses</option>
+      </select>
+      <div class="toggle-group" id="filters"></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="legend">
+        <span class="legend-item"><span class="dot blue"></span> Dobra I</span>
+        <span class="legend-item"><span class="dot dark"></span> Dobra II</span>
+        <span class="legend-item"><span class="dot holiday"></span> Feriado</span>
+      </div>
+      <div class="quick-actions">
+        <button class="ghost" id="showTodayStyle">Realçar feriados</button>
+        <button class="ghost" id="resetFilters">Limpar filtros</button>
+      </div>
+    </div>
+
+    <main class="layout">
+      <section class="months-grid" id="monthsGrid"></section>
+
+      <aside class="panel">
+        <h2>Detalhes do dia</h2>
+        <p id="panelDescription">Clique em um dia do calendário para ver a dobra, o feriado e a data completa.</p>
+
+        <div class="info-list">
+          <div class="info-card">
+            <div class="k">Data</div>
+            <div class="v" id="detailDate">—</div>
+          </div>
+          <div class="info-card">
+            <div class="k">Tipo</div>
+            <div class="v" id="detailType">—</div>
+          </div>
+          <div class="info-card">
+            <div class="k">Observação</div>
+            <div class="v" id="detailHoliday">—</div>
+          </div>
+          <div class="info-card">
+            <div class="k">Status visual</div>
+            <div class="v" id="detailBadge"><span class="pill dark">Selecione um dia</span></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <p class="footer-note">Feito para publicação simples no GitHub Pages. Basta salvar este arquivo como <strong>index.html</strong> no repositório.</p>
+  </div>
+
+  <script>
+    const months = [
+      { id: 1, name: 'Janeiro', days: 31, firstWeekday: 4, dobra1: [3,4,6,8,9,11,12,14,17,18,20,22,23,24,26,28,31], holidays: { 1: 'Confraternização Universal' } },
+      { id: 2, name: 'Fevereiro', days: 28, firstWeekday: 0, dobra1: [1,3,5,6,8,9,11,14,15,17,19,20,23,25,28], holidays: { 17: 'Carnaval (Ponto facultativo)' } },
+      { id: 3, name: 'Março', days: 31, firstWeekday: 0, dobra1: [1,3,5,6,8,9,11,14,15,17,19,20,23,25,28,29,31], holidays: {} },
+      { id: 4, name: 'Abril', days: 30, firstWeekday: 3, dobra1: [2,3,6,8,11,12,14,16,17,20,22,25,26,28,30], holidays: { 3: 'Paixão de Cristo', 21: 'Tiradentes' } },
+      { id: 5, name: 'Maio', days: 31, firstWeekday: 5, dobra1: [1,4,6,9,10,12,14,15,18,20,23,24,26,28,29], holidays: { 1: 'Dia do Trabalho' } },
+      { id: 6, name: 'Junho', days: 30, firstWeekday: 1, dobra1: [1,3,6,7,9,11,12,15,17,20,21,23,25,26,29], holidays: { 4: 'Corpus Christi' } },
+      { id: 7, name: 'Julho', days: 31, firstWeekday: 3, dobra1: [1,4,5,7,9,10,13,15,18,19,21,23,24,25,27,29], holidays: {} },
+      { id: 8, name: 'Agosto', days: 31, firstWeekday: 6, dobra1: [1,2,4,6,7,10,12,15,16,18,20,21,24,26,29,30], holidays: { 15: 'Assunção de Nossa Senhora' } },
+      { id: 9, name: 'Setembro', days: 30, firstWeekday: 2, dobra1: [1,3,4,7,9,12,13,15,17,18,21,23,26,27,29], holidays: { 7: 'Independência do Brasil' } },
+      { id: 10, name: 'Outubro', days: 31, firstWeekday: 4, dobra1: [1,2,5,7,10,11,13,15,16,19,21,24,25,27,29,30], holidays: { 12: 'Nossa Senhora Aparecida' } },
+      { id: 11, name: 'Novembro', days: 30, firstWeekday: 0, dobra1: [2,4,7,8,10,12,13,16,18,21,22,24,26,27,30], holidays: { 2: 'Finados', 15: 'Proclamação da República', 20: 'Zumbi e Consciência Negra' } },
+      { id: 12, name: 'Dezembro', days: 31, firstWeekday: 2, dobra1: [2,5,6,8,10,11,14,16,19,20,22,24,25,28,30], holidays: { 8: 'Imaculada Conceição', 25: 'Natal' } }
+    ];
+
+    const weekdayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const filterOptions = [
+      { id: 'todos', label: 'Todos' },
+      { id: 'dobra1', label: 'Só Dobra I' },
+      { id: 'dobra2', label: 'Só Dobra II' },
+      { id: 'feriados', label: 'Só feriados' }
+    ];
+
+    let activeFilter = 'todos';
+    let activeMonth = 'todos';
+    let searchTerm = '';
+    let selectedKey = '';
+    let holidayGlow = false;
+
+    const monthsGrid = document.getElementById('monthsGrid');
+    const monthSelect = document.getElementById('monthSelect');
+    const filters = document.getElementById('filters');
+    const searchInput = document.getElementById('searchInput');
+
+    function isDobra1(month, day) {
+      return month.dobra1.includes(day);
+    }
+
+    function getType(month, day) {
+      return isDobra1(month, day) ? 'Dobra I' : 'Dobra II';
+    }
+
+    function getBadge(month, day) {
+      const holiday = month.holidays[day];
+      if (holiday) return '<span class="pill holiday">Feriado</span>';
+      if (isDobra1(month, day)) return '<span class="pill blue">Dobra I</span>';
+      return '<span class="pill dark">Dobra II</span>';
+    }
+
+    function countStats() {
+      let dobra1 = 0;
+      let holiday = 0;
+      let total = 0;
+      months.forEach(month => {
+        for (let day = 1; day <= month.days; day++) {
+          total++;
+          if (isDobra1(month, day)) dobra1++;
+          if (month.holidays[day]) holiday++;
+        }
+      });
+      document.getElementById('statD1').textContent = dobra1;
+      document.getElementById('statD2').textContent = total - dobra1;
+      document.getElementById('statFer').textContent = holiday;
+    }
+
+    function setupFilters() {
+      filterOptions.forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = `chip ${option.id === activeFilter ? 'active' : ''}`;
+        btn.textContent = option.label;
+        btn.dataset.filter = option.id;
+        btn.addEventListener('click', () => {
+          activeFilter = option.id;
+          renderFilters();
+          renderMonths();
+        });
+        filters.appendChild(btn);
+      });
+    }
+
+    function renderFilters() {
+      [...filters.children].forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === activeFilter);
+      });
+    }
+
+    function setupMonthSelect() {
+      months.forEach(month => {
+        const option = document.createElement('option');
+        option.value = String(month.id);
+        option.textContent = month.name;
+        monthSelect.appendChild(option);
+      });
+      monthSelect.addEventListener('change', e => {
+        activeMonth = e.target.value;
+        renderMonths();
+      });
+    }
+
+    function matchesSearch(month, day) {
+      if (!searchTerm) return true;
+      const holiday = month.holidays[day] || '';
+      const text = `${month.name} ${day} ${getType(month, day)} ${holiday}`.toLowerCase();
+      return text.includes(searchTerm);
+    }
+
+    function shouldDim(month, day) {
+      const holiday = Boolean(month.holidays[day]);
+      const type = isDobra1(month, day) ? 'dobra1' : 'dobra2';
+      const filterMismatch =
+        activeFilter === 'todos' ? false :
+        activeFilter === 'feriados' ? !holiday :
+        activeFilter !== type;
+
+      const searchMismatch = !matchesSearch(month, day);
+      return filterMismatch || searchMismatch;
+    }
+
+    function renderMonths() {
+      monthsGrid.innerHTML = '';
+      const visibleMonths = months.filter(month => activeMonth === 'todos' || Number(activeMonth) === month.id);
+
+      visibleMonths.forEach(month => {
+        const card = document.createElement('article');
+        card.className = 'month-card';
+
+        const dobra1Count = month.dobra1.length;
+        const dobra2Count = month.days - dobra1Count;
+
+        card.innerHTML = `
+          <div class="month-head">
+            <div>
+              <div class="month-title">${month.name}</div>
+              <div class="month-sub">2026 • ${month.days} dias</div>
+            </div>
+            <div class="badge">${month.id}</div>
+          </div>
+          <div class="weekdays">
+            ${weekdayNames.map((name, i) => `<div class="weekday ${i === 0 ? 'sun' : ''}">${name}</div>`).join('')}
+          </div>
+          <div class="days"></div>
+          <div class="month-footer">
+            <span>🔵 ${dobra1Count} Dobra I</span>
+            <span>⚫ ${dobra2Count} Dobra II</span>
+          </div>
+        `;
+
+        const daysEl = card.querySelector('.days');
+
+        for (let i = 0; i < month.firstWeekday; i++) {
+          const empty = document.createElement('div');
+          empty.className = 'day empty';
+          daysEl.appendChild(empty);
+        }
+
+        for (let day = 1; day <= month.days; day++) {
+          const holiday = month.holidays[day];
+          const dayEl = document.createElement('button');
+          const key = `${month.id}-${day}`;
+          const typeClass = isDobra1(month, day) ? 'dobra1' : 'dobra2';
+          dayEl.className = `day ${holiday ? 'holiday' : typeClass} ${shouldDim(month, day) ? 'hidden' : ''} ${selectedKey === key ? 'selected' : ''}`;
+          if (holiday && holidayGlow) {
+            dayEl.style.boxShadow = '0 0 0 1px rgba(0,0,0,0.08), 0 0 18px rgba(255,232,77,0.55)';
+          }
+          dayEl.innerHTML = `${holiday ? '<small>feriado</small>' : ''}${day}`;
+          dayEl.addEventListener('click', () => selectDay(month, day));
+          daysEl.appendChild(dayEl);
+        }
+
+        monthsGrid.appendChild(card);
+      });
+    }
+
+    function selectDay(month, day) {
+      selectedKey = `${month.id}-${day}`;
+      const holiday = month.holidays[day];
+      document.getElementById('detailDate').textContent = `${day} de ${month.name} de 2026`;
+      document.getElementById('detailType').textContent = getType(month, day);
+      document.getElementById('detailHoliday').textContent = holiday || 'Sem observação especial neste dia.';
+      document.getElementById('detailBadge').innerHTML = getBadge(month, day);
+      document.getElementById('panelDescription').textContent = holiday
+        ? 'Este dia está destacado como feriado no calendário original.'
+        : 'Dia selecionado a partir do calendário anual de dobras.';
+      renderMonths();
+    }
+
+    searchInput.addEventListener('input', e => {
+      searchTerm = e.target.value.trim().toLowerCase();
+      renderMonths();
+    });
+
+    document.getElementById('resetFilters').addEventListener('click', () => {
+      activeFilter = 'todos';
+      activeMonth = 'todos';
+      searchTerm = '';
+      holidayGlow = false;
+      monthSelect.value = 'todos';
+      searchInput.value = '';
+      renderFilters();
+      renderMonths();
+    });
+
+    document.getElementById('showTodayStyle').addEventListener('click', () => {
+      holidayGlow = !holidayGlow;
+      document.getElementById('showTodayStyle').textContent = holidayGlow ? 'Remover realce' : 'Realçar feriados';
+      renderMonths();
+    });
+
+    countStats();
+    setupFilters();
+    setupMonthSelect();
+    renderMonths();
+  </script>
+</body>
+</html>
